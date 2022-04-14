@@ -1,0 +1,337 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Serverless DEMO Api
+  description: Serverless DEMO Api
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /demos:
+    options:
+      tags:
+        - Demos
+      responses:
+        '200':
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: |
+            { "statusCode": 200 }
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS, GET, POST'''
+              method.response.header.Access-Control-Allow-Headers: >-
+                'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: |
+                {}
+        type: mock
+    get:
+      summary: Get all Demo items
+      description: Get all Demo items
+      operationId: GetAllDemos
+      security:
+        - default: []
+      responses:
+        '200':
+          description: Get all Demo items
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoItem'
+        default:
+          description: unexpected error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        uri:
+          'Fn::Sub': >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetAllDemosFunction.Arn}:live/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      x-amazon-apigateway-request-validator : all
+      parameters:
+        - in: body
+          name: item
+          schema:
+            $ref: '#/components/schemas/DemoItem'
+          required: true
+          description: a new Demo item
+      summary: Create a new Demo item
+      description: Create a new Demo item
+      operationId: CreateDemo
+      security:
+        - default: []
+      responses:
+        '201':
+          description: Create a new Demo item
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        uri:
+          'Fn::Sub': >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${postDemoFunction.Arn}:live/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  '/demos/{demoId}':
+    parameters:
+      - in: path
+        name: demoId
+        schema:
+          type: string
+        required: true
+        description: Idenfier of a Demo item
+    options:
+      tags:
+        - Demos
+      responses:
+        '200':
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: |
+            { "statusCode": 200 }
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS, GET, PUT, DELETE'''
+              method.response.header.Access-Control-Allow-Headers: >-
+                'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: |
+                {}
+        type: mock
+    get:
+      x-amazon-apigateway-request-validator : params-only
+      summary: Get a demo item by it's identifier
+      description: Get a demo item by it's identifier
+      operationId: GetDemo
+      security:
+        - default: []
+      responses:
+        '200':
+          description: Get a demo item by it's identifier
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoItem'
+        default:
+          description: unexpected error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        uri:
+          'Fn::Sub': >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getDemoFunction.Arn}:live/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    put:
+      x-amazon-apigateway-request-validator : all
+      parameters:
+        - in: body
+          name: item
+          schema:
+            $ref: '#/components/schemas/DemoItem'
+          required: true
+          description: a Demo item
+      summary: Update a Demo item
+      description: Update a Demo item
+      operationId: UpdateDemo
+      security:
+        - default: []
+      responses:
+        '200':
+          description: Update a Demo item
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoItem'
+        default:
+          description: unexpected error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        uri:
+          'Fn::Sub': >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${putDemoFunction.Arn}:live/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    delete:
+      x-amazon-apigateway-request-validator : params-only
+      summary: Delete a Demo item
+      description: Delete a Demo item
+      operationId: DeleteDemo
+      security:
+        - default: []
+      responses:
+        '200':
+          description: Delete a Demo item
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        default:
+          description: unexpected error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        uri:
+          'Fn::Sub': >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${deleteDemoFunction.Arn}:live/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+components:
+  schemas:
+    Message:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    DemoItem:
+      type: object
+      required:
+        - title
+      properties:
+        demoId:
+          type: string
+        updatedAt:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+  securitySchemes:
+    default:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: awsSigv4
+x-amazon-apigateway-request-validators:
+  basic:
+    validateRequestParameters: true
+    validateRequestBody: true
+  params-only:
+    validateRequestParameters: true
+    validateRequestBody: false

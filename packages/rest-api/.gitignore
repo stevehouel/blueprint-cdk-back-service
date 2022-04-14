@@ -1,0 +1,2 @@
+features/config/*.json
+!features/config/config-example.json

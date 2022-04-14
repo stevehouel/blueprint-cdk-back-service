@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "definitions": {},
+  "title": "DemoSchema",
+  "description": "Schema representing an demo stored in the database",
+  "type": "object",
+  "required": [
+    "id",
+    "entityId",
+    "version",
+    "userId",
+    "createdDate",
+    "updatedDate",
+    "demoStatus"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "pattern": "v[0-9]+_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+      "readOnly": true
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "readOnly": true
+    },
+    "version": {
+      "type": "number",
+      "minimum": 1,
+      "readOnly": true
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "pattern": "^[a-z]*$"
+    },
+    "createdDate": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true
+    },
+    "updatedDate": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true
+    },
+    "demoStatus": {
+      "type": "string",
+      "enum": ["CREATED", "PENDING_VALIDATION", "VALIDATED", "DELETED"]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,116 @@
+######################
+# Unit test / coverage reports
+######################
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+######################
+# Eclipse
+######################
+*.pydevproject
+.project
+.metadata
+tmp/
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+.factorypath
+
+# External tool builders
+.externalToolBuilders/**
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+######################
+# Intellij
+######################
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+classes/
+
+######################
+# Visual Studio Code
+######################
+.vscode/
+
+######################
+# Windows
+######################
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+######################
+# Mac OSX
+######################
+.DS_Store
+.svn
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+######################
+# Logs
+######################
+*.log
+
+######################
+# Others
+######################
+*.*~
+*~
+.merge_file*
+
+*.swp
+__pycache__
+.pytest_cache
+.env
+*.egg-info
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+dist
+
+.idea
+
+
+# Parcel default cache directory
+.parcel-cache
+
+local-config.json

@@ -1,0 +1,11 @@
+{
+  "repositoryName": "stevehouel/blueprint-cdk-front-web",
+  "branchName": "master",
+  "connectionArn": "arn:aws:codestar-connections:eu-west-1:653738050483:connection/b90f8f6b-016c-43b7-bee8-3623264daf58",
+  "selfMutating": true,
+  "stages": [
+    {
+      "name": "Testing"
+    }
+  ]
+}

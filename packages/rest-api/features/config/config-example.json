@@ -1,0 +1,9 @@
+{
+  "cognitoClientId": "",
+  "cognitoUserPool": "",
+  "testUserSecretArn": "",
+  "testAdminSecretArn": "",
+  "testingRoleArn": "",
+  "apiUrl": "",
+  "demoTable": ""
+}

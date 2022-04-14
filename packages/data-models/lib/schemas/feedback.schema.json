@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "required": [
+    "rating"
+  ],
+  "properties": {
+    "rating": {
+      "maximum": 5,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "message": {
+      "maxLength": 4096,
+      "type": "string"
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "pattern": "^[a-z]*$",
+      "readOnly": true
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true
+    }
+  },
+  "additionalProperties": false
+}
