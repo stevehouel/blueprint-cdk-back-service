@@ -49,7 +49,10 @@ export class PipelineStack extends Stack {
 
     for (const stage of props.stages) {
       // Adding Infra Stage
-      const infra = new InfraStage(this, stage.name, stage);
+      const infra = new InfraStage(this, stage.name, {
+        ...stage,
+        pipelineAccount: this.account
+      });
       const infraStage = pipeline.addStage(infra);
       // In case we are in a testing stage
       if (stage.testing) {

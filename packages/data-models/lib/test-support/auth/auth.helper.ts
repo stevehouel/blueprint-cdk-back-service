@@ -4,7 +4,7 @@ import {
   CognitoUser,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
-import { ConfigParameters, Config } from '../config/Config';
+import { ConfigParameters, Config } from '../config/config';
 
 export interface JwtTokens {
   idToken: string;

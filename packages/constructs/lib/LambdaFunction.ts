@@ -23,6 +23,7 @@ export class LambdaFunction extends NodejsFunction {
         removalPolicy: RemovalPolicy.RETAIN, // retain old versions
         retryAttempts: 1, // async retry attempts
       },
+      functionName: id,
       tracing: Tracing.ACTIVE,
       memorySize: 512,
       runtime: Runtime.NODEJS_14_X,
@@ -37,7 +38,7 @@ export class LambdaFunction extends NodejsFunction {
     this.liveAlias = this.currentVersion.addAlias('live');
 
     const forceLambdaId = this.node.defaultChild as CfnFunction;
-    forceLambdaId.overrideLogicalId(this.functionName);
+    forceLambdaId.overrideLogicalId(id);
 
     this.errorAlarm = new Alarm(scope, `${id}ErrorAlarm`, {
       metric: this.metricErrors(),

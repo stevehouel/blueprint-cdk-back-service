@@ -65,7 +65,7 @@ export class APIStack extends Stack {
     // ** Api Gateway **
     // Create Api Specs asset
     const asset = new Asset(this, 'ApiAsset', {
-      path: 'packages/rest-api/specs/api-specs.yaml',
+      path: '../rest-api/specs/api-specs.yaml',
     });
 
     // Transform Specs file

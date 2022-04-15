@@ -5,7 +5,7 @@ SHELL:=/bin/bash
 
 export REGION ?= eu-west-1
 export PROJECT_NAME ?= BlueprintCdkBackService
-export PIPELINE_STACK_NAME ?= $(PROJECT_NAME)-Pipeline
+export PIPELINE_STACK ?= ${PROJECT_NAME}-Pipeline
 export CI ?= false
 
 install:
@@ -13,6 +13,7 @@ install:
 	yarn bootstrap
 
 build:
+	@yarn prebuild
 	@yarn build
 
 test:
@@ -23,6 +24,7 @@ test-functionality:
 	yarn test-functional
 
 synth:
+	@make build
 	@cd packages/infra && \
 	yarn cdk synth -a bin/infra.js
 	
@@ -30,12 +32,13 @@ deploy-local:
 	@make install
 	@make synth
 	@cd packages/infra && \
-	yarn cdk -a cdk.out/assembly-$PROJECT_NAME deploy \*
+	yarn cdk -a cdk.out/assembly-${PROJECT_NAME} deploy \*
 
 deploy:
 	@make install
+	@make build
 	@cd packages/infra && \
-	yarn cdk deploy $PIPELINE_STACK_NAME
+	yarn cdk deploy ${PIPELINE_STACK_NAME}
 
 create-test-user:
 	cd packages/data-models && \

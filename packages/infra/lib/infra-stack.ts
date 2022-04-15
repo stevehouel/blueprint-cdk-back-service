@@ -1,5 +1,5 @@
 
-import { CfnOutput, Fn, Stack, StackProps, Token } from 'aws-cdk-lib';
+import {CfnOutput, Duration, Fn, Stack, StackProps, Token} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
   CfnUserPoolGroup,
@@ -19,7 +19,7 @@ import { DeadLetterQueue } from 'project-constructs';
 
 interface InfraStackProps extends StackProps {
   readonly domainName?: string;
-  readonly cognitoDomainPrefix: string;
+  readonly cognitoDomainPrefix?: string;
   readonly callbackUrls?: string[];
   readonly logoutUrls?: string[];
   readonly terminationProtection?: boolean;
@@ -69,6 +69,17 @@ export class InfraStack extends Stack {
     });
 
     this.cognitoUserPool = new UserPool(this, 'UserPool', {
+      selfSignUpEnabled: true,
+      signInAliases: { username: false, email: true },
+      autoVerify: { email: true },
+      passwordPolicy: {
+        minLength: 12,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigits: true,
+        requireSymbols: true,
+        tempPasswordValidity: Duration.days(3),
+      },
       standardAttributes: {
         email: {
           required: true,
@@ -81,7 +92,7 @@ export class InfraStack extends Stack {
     // Create UserPool domain
     const domain = this.cognitoUserPool.addDomain('UserPoolDomain', {
       cognitoDomain: {
-        domainPrefix: props.cognitoDomainPrefix,
+        domainPrefix: props.cognitoDomainPrefix ? props.cognitoDomainPrefix : this.stackName.toLowerCase(),
       },
     });
 
@@ -107,16 +118,16 @@ export class InfraStack extends Stack {
       }
     });
 
-    const identityPool = new IdentityPool(this, 'IdentityPool', {
+    this.identityPool = new IdentityPool(this, 'IdentityPool', {
       allowUnauthenticatedIdentities: true,
     });
 
-    identityPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({
+    this.identityPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({
       userPoolClient: this.cognitoUserPoolClient,
       userPool: this.cognitoUserPool
     }));
 
-    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+    this.identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [ 'rum:PutRumEvents' ],
       resources: [ this.formatArn({ service: 'rum', resource: 'appmonitor', resourceName: props.domainName }) ],
@@ -146,8 +157,8 @@ export class InfraStack extends Stack {
           enableXRay: true,
           sessionSampleRate: 0.5,
           telemetries: [ 'errors', 'performance', 'http' ],
-          identityPoolId: identityPool.identityPoolId,
-          guestRoleArn: identityPool.unauthenticatedRole.roleArn,
+          identityPoolId: this.identityPool.identityPoolId,
+          guestRoleArn: this.identityPool.unauthenticatedRole.roleArn,
         },
       });
 
@@ -162,7 +173,7 @@ export class InfraStack extends Stack {
     });
 
     this.identityPoolId = new CfnOutput(this, 'IdentityPoolId', {
-      value: identityPool.identityPoolId,
+      value: this.identityPool.identityPoolId,
     });
 
     this.userPoolAppClientId = new CfnOutput(this, 'UserPoolAppClientId', {
