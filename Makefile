@@ -13,7 +13,6 @@ install:
 	yarn bootstrap
 
 build:
-	@yarn prebuild
 	@yarn build
 
 test:
