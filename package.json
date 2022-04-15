@@ -7,8 +7,7 @@
   ],
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build --ignore=data-models",
-    "prebuild": "lerna run build --scope=data-models",
+    "build": "lerna run build",
     "watch": "lerna run --parallel --no-sort watch",
     "test": "CI=true lerna run --parallel --no-sort test",
     "test:watch": "lerna run --parallel --no-sort test:watch",
