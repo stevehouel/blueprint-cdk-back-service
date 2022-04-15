@@ -3,6 +3,7 @@ import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from 'aws-
 import { Construct } from 'constructs';
 import { InfraStage, InfraStageProps } from './infra-stage';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import {ComputeType, LinuxArmBuildImage} from 'aws-cdk-lib/aws-codebuild';
 
 export interface StageEnvironment extends InfraStageProps {
   readonly name: string;
@@ -45,6 +46,13 @@ export class PipelineStack extends Stack {
       selfMutation: props.selfMutating,
       crossAccountKeys: true, // Encrypt artifacts, required for cross-account deployments
       synth: synthStep,
+      codeBuildDefaults: {
+
+        // Control the build environment
+        buildEnvironment: {
+          computeType: ComputeType.MEDIUM
+        },
+      }
     });
 
     for (const stage of props.stages) {
