@@ -24,6 +24,7 @@ test-functionality:
 
 synth:
 	@make install
+	@make build
 	@cd packages/infra && \
 	yarn cdk synth -a bin/infra.js
 	
