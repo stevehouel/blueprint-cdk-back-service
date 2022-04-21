@@ -31,13 +31,14 @@ export class PipelineStack extends Stack {
     const synthStep = new ShellStep('Synth', {
       input: source,
       installCommands: [
-        'make install'
+        'yarn install --frozen-lockfile',
+        'yarn bootstrap'
       ],
       commands: [
-        'make build',
-        'make lint',
-        'CI-true make test',
-        'make synth'
+        'yarn build',
+        'yarn lint',
+        'CI=true yarn test',
+        'yarn synth'
       ],
       primaryOutputDirectory: 'packages/infra/cdk.out',
     });
@@ -70,7 +71,7 @@ export class PipelineStack extends Stack {
             STAGE: stage.name.toLowerCase()
           },
           commands: [
-            'make test-functionality'
+            'yarn test-functional'
           ],
           rolePolicyStatements: [ new PolicyStatement({
             resources: [ infra.testingRoleArn.value ],

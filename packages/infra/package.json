@@ -15,6 +15,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
+    "synth": "cdk synth -a bin/infra.js",
     "lint": "eslint --ext .ts --ignore-pattern *.d.ts lib",
     "lint-fix": "eslint --fix --ext .ts --ignore-pattern *.d.ts lib"
   },
