@@ -8509,12 +8509,6 @@ progress@^2.0.0, progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-"project-constructs@file:packages/constructs":
-  version "0.1.0"
-  dependencies:
-    aws-cdk-lib "2.20.0"
-    constructs "^10.0.0"
-
 promise-inflight@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
@@ -8906,7 +8900,7 @@ resolve@^1.10.0, resolve@^1.12.0, resolve@^1.18.1, resolve@^1.19.0, resolve@^1.2
     aws-sdk "^2.1099.0"
     aws-xray-sdk "^3.3.4"
     axios "^0.26.1"
-    data-models "file:../../../../../Library/Caches/Yarn/v6/npm-rest-api-0.0.0-c848ab18-9b62-455f-97ca-c86f5357e9c4-1650092748693/node_modules/data-models"
+    data-models "file:../../../../../Library/Caches/Yarn/v6/npm-rest-api-0.0.0-1f0ba28a-7a7f-49d5-9772-52dd4a170ea9-1650557654271/node_modules/data-models"
     lodash "^4.17.21"
     uuid "^8.3.2"
 
