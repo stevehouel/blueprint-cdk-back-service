@@ -38,7 +38,8 @@ export class PipelineStack extends Stack {
         'yarn build',
         'yarn lint',
         'CI=true yarn test',
-        'yarn synth'
+        'ls -l',
+        'make synth'
       ],
       primaryOutputDirectory: 'packages/infra/cdk.out',
     });
