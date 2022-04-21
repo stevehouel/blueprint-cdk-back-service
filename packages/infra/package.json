@@ -1,6 +1,7 @@
 {
   "name": "infra",
   "version": "0.1.0",
+  "license": "ISC",
   "bin": {
     "infra": "bin/infra.js"
   },
@@ -9,7 +10,9 @@
     "test": "test"
   },
   "files": [
-    "lib"
+    "lib",
+    "bin",
+    "config"
   ],
   "scripts": {
     "build": "tsc",

@@ -30,9 +30,11 @@ export class PipelineStack extends Stack {
     // Synth Step
     const synthStep = new ShellStep('Synth', {
       input: source,
-      commands: [
+      installCommands: [
         'yarn install --frozen-lockfile',
-        'yarn bootstrap',
+        'yarn bootstrap'
+      ],
+      commands: [
         'yarn build',
         'yarn lint',
         'CI=true yarn test',
