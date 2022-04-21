@@ -23,7 +23,6 @@ test-functionality:
 	yarn test-functional
 
 synth:
-	@make build
 	@cd packages/infra && \
 	yarn cdk synth -a bin/infra.js
 	
@@ -34,8 +33,6 @@ deploy-local:
 	yarn cdk -a cdk.out/assembly-${PROJECT_NAME} deploy \*
 
 deploy:
-	@make install
-	@make build
 	@cd packages/infra && \
 	yarn cdk deploy ${PIPELINE_STACK_NAME}
 

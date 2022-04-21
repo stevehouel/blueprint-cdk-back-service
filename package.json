@@ -11,7 +11,8 @@
     "watch": "lerna run --parallel --no-sort watch",
     "test": "CI=true lerna run --parallel --no-sort test",
     "test:watch": "lerna run --parallel --no-sort test:watch",
-    "lint": "lerna run --parallel --no-sort lint"
+    "lint": "lerna run --parallel --no-sort lint",
+    "test-functional": "lerna run test-functional"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

@@ -1,9 +1,9 @@
 import { InfraStack } from './infra-stack';
 import { TestingStack } from './testing-stack';
+import { ModelStack } from './model-stack';
 import { CfnOutput, Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { APIStack } from 'rest-api';
-import { ModelStack } from 'data-models';
 
 export interface InfraStageProps extends StageProps {
   readonly domainName?: string;

@@ -5,19 +5,19 @@
   "author": "Steve Houël <steve.houel.perso@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "private": false,
+  "files": [
+    "lib"
+  ],
   "directories": {
     "lib": "lib",
     "test": "__tests__"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:watch": "jest --watch",
     "lint": "eslint --ext .ts --ignore-pattern *.d.ts lib",
     "lint-fix": "eslint --fix --ext .ts --ignore-pattern *.d.ts lib"
@@ -35,11 +35,8 @@
   "devDependencies": {
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
-    "aws-cdk-lib": "2.19.0",
-    "constructs": "^10.0.0",
     "jest": "^26.4.2",
     "eslint": "^7.8.1",
-    "typescript": "^4.0.2",
-    "project-constructs": "file:../constructs"
+    "typescript": "^4.0.2"
   }
 }
