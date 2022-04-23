@@ -124,7 +124,7 @@ paths:
               method.response.header.Access-Control-Allow-Origin: '''*'''
         uri:
           'Fn::Sub': >-
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${postDemoFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PostDemoFunction.Arn}:live/invocations
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: aws_proxy
@@ -206,7 +206,7 @@ paths:
               method.response.header.Access-Control-Allow-Origin: '''*'''
         uri:
           'Fn::Sub': >-
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getDemoFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetDemoFunction.Arn}:live/invocations
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: aws_proxy
@@ -253,7 +253,7 @@ paths:
               method.response.header.Access-Control-Allow-Origin: '''*'''
         uri:
           'Fn::Sub': >-
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${putDemoFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PutDemoFunction.Arn}:live/invocations
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: aws_proxy
@@ -293,7 +293,7 @@ paths:
               method.response.header.Access-Control-Allow-Origin: '''*'''
         uri:
           'Fn::Sub': >-
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${deleteDemoFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteDemoFunction.Arn}:live/invocations
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: aws_proxy
