@@ -1,18 +1,15 @@
 import * as api from '@aws-cdk/aws-apigatewayv2-alpha';
-import {Construct} from 'constructs';
-import {CorsHttpMethod} from '@aws-cdk/aws-apigatewayv2-alpha';
-import {Duration} from 'aws-cdk-lib';
-import {LogGroup, RetentionDays} from 'aws-cdk-lib/aws-logs';
-import {CfnStage} from 'aws-cdk-lib/aws-apigatewayv2';
-
-export interface HttpApiProps extends api.HttpApiProps {
-}
+import { Construct } from 'constructs';
+import { CorsHttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { Duration } from 'aws-cdk-lib';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';
 
 export class HttpApi extends api.HttpApi {
 
   public readonly logGroup: LogGroup;
 
-  constructor(scope: Construct, id: string, props: HttpApiProps) {
+  constructor(scope: Construct, id: string, props: api.HttpApiProps) {
     super(scope, id, {
       corsPreflight: {
         allowHeaders: [ 'Authorization', 'Content-Type' ],

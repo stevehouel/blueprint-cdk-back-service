@@ -1,6 +1,6 @@
 import fs from 'fs';
-import {CfnNamedQuery, CfnNamedQueryProps} from 'aws-cdk-lib/aws-athena';
-import {Construct} from 'constructs';
+import { CfnNamedQuery, CfnNamedQueryProps } from 'aws-cdk-lib/aws-athena';
+import { Construct } from 'constructs';
 
 export interface NamedQueryProps extends Omit<CfnNamedQueryProps, 'queryString'> {
   readonly path: string;

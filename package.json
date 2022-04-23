@@ -13,6 +13,7 @@
     "synth": "CI=true lerna run --parallel --no-sort synth",
     "test:watch": "lerna run --parallel --no-sort test:watch",
     "lint": "lerna run --parallel --no-sort lint",
+    "lint-fix": "lerna run --parallel --no-sort lint-fix",
     "test-functional": "lerna run test-functional",
     "create-test-user": "lerna run create-test-user"
   },

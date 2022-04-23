@@ -1,5 +1,5 @@
-import {Duration, NestedStack, NestedStackProps} from 'aws-cdk-lib';
-import {Construct} from 'constructs';
+import { Duration, NestedStack, NestedStackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import {
   CfnAlarm,
   CfnAnomalyDetector,
@@ -13,8 +13,8 @@ import {
   Statistic,
   TextWidget, TreatMissingData
 } from 'aws-cdk-lib/aws-cloudwatch';
-import {HttpApi, LambdaFunction} from 'project-constructs';
-import {HTTP_4XX_ERROR} from './rest-api-stack';
+import { HttpApi, LambdaFunction } from 'project-constructs';
+import { HTTP_4XX_ERROR } from './rest-api-stack';
 
 export interface DashboardsStackProps extends NestedStackProps {
   readonly projectName: string;

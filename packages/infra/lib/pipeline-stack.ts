@@ -3,7 +3,7 @@ import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from 'aws-
 import { Construct } from 'constructs';
 import { InfraStage, InfraStageProps } from './infra-stage';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import {ComputeType, LinuxArmBuildImage} from 'aws-cdk-lib/aws-codebuild';
+import { ComputeType } from 'aws-cdk-lib/aws-codebuild';
 
 export interface StageEnvironment extends InfraStageProps {
   readonly name: string;

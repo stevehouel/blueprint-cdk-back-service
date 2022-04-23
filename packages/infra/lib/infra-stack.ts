@@ -1,5 +1,5 @@
 
-import {CfnOutput, Duration, Fn, Stack, StackProps, Token} from 'aws-cdk-lib';
+import { CfnOutput, Duration, Fn, Stack, StackProps, Token } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
   CfnUserPoolGroup,

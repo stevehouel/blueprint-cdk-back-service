@@ -3,7 +3,7 @@ import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs/lib';
 import { Role } from 'aws-cdk-lib/aws-iam';
 import { AttributeType, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
-import {DynamoTable} from 'project-constructs';
+import { DynamoTable } from 'project-constructs';
 
 export interface ModelProps extends StackProps {
   readonly testingRoleArn: string;

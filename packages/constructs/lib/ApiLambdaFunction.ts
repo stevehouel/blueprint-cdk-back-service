@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { LambdaFunction, LambdaFunctionProps } from './LambdaFunction';
-import {HttpApi, HttpMethod, IHttpApi, IHttpRouteAuthorizer} from '@aws-cdk/aws-apigatewayv2-alpha';
-import {HttpLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpApi, HttpMethod, IHttpRouteAuthorizer } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 
 export interface ApiLambdaFunctionProps extends LambdaFunctionProps {

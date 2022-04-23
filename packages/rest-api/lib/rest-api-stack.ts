@@ -7,14 +7,14 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { DynamoEventSource, SqsDlq, SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
-import {ILambdaDeploymentConfig, LambdaApplication} from 'aws-cdk-lib/aws-codedeploy';
-import {HttpUserPoolAuthorizer} from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { ILambdaDeploymentConfig, LambdaApplication } from 'aws-cdk-lib/aws-codedeploy';
+import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import {DomainMappingOptions, DomainName, HttpMethod} from '@aws-cdk/aws-apigatewayv2-alpha';
-import {FilterPattern, MetricFilter} from 'aws-cdk-lib/aws-logs';
-import {OperationalStack} from './operational-stack';
-import {CnameRecord, HostedZone} from 'aws-cdk-lib/aws-route53';
-import {DnsValidatedCertificate} from 'aws-cdk-lib/aws-certificatemanager';
+import { DomainMappingOptions, DomainName, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { FilterPattern, MetricFilter } from 'aws-cdk-lib/aws-logs';
+import { OperationalStack } from './operational-stack';
+import { CnameRecord, HostedZone } from 'aws-cdk-lib/aws-route53';
+import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 export const HTTP_4XX_ERROR = 'Http4XXError';
 
