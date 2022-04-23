@@ -38,7 +38,6 @@ export class PipelineStack extends Stack {
         'yarn build',
         'yarn lint',
         'CI=true yarn test',
-        'cd packages/infra/node_modules/rest-api && cat package.json && ls -l lib/',
         'yarn synth'
       ],
       primaryOutputDirectory: 'packages/infra/cdk.out',
