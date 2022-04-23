@@ -48,9 +48,6 @@ export class LambdaFunction extends NodejsFunction {
 
     this.liveAlias = this.currentVersion.addAlias('live');
 
-    const forceLambdaId = this.node.defaultChild as CfnFunction;
-    forceLambdaId.overrideLogicalId(id);
-
     this.errorAlarm = new Alarm(scope, `${id}ErrorAlarm`, {
       metric: this.metricErrors(),
       threshold: 1,

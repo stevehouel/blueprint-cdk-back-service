@@ -14,7 +14,6 @@ export class HttpApi extends api.HttpApi {
         allowOrigins: [ '*' ],
         maxAge: Duration.hours(1),
       },
-      disableExecuteApiEndpoint: true,
       ...props,
     });
   }

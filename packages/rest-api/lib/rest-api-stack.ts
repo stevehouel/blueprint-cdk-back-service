@@ -92,6 +92,7 @@ export class APIStack extends Stack {
 
     this.api = new HttpApi(this, 'HttpApi', {
       defaultDomainMapping: domainMapping,
+      disableExecuteApiEndpoint: domainMapping != undefined,
     });
 
     const apiLogGroup = new LogGroup(this, 'ApiAccessLogGroup', {

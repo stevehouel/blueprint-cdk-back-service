@@ -24,7 +24,7 @@ export class ApiLambdaFunction extends LambdaFunction {
     props.api.addRoutes({
       path: props.path,
       methods: [ props.method ],
-      integration: new HttpLambdaIntegration(`${id}Integration`, this),
+      integration: new HttpLambdaIntegration(`${id}Integration`, this.liveAlias),
       authorizer: props.authorizer
     });
   }
