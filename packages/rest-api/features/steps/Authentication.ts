@@ -1,6 +1,6 @@
 import { configuration, dataManager } from './Shared';
 import {Given} from '@cucumber/cucumber';
-import {getCognitoUserTokens, TestUserType} from 'data-models';
+import {getCognitoUserTokens, TestUserType} from '../auth/auth.helper';
 
 const userTokenPromise = getCognitoUserTokens(configuration, TestUserType.USER);
 const adminTokenPromise = getCognitoUserTokens(configuration, TestUserType.ADMIN);

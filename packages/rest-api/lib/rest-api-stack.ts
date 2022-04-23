@@ -1,63 +1,53 @@
 import { join as pathJoin } from 'path';
 
-import { DeadLetterQueue, DynamoTable, LambdaFunction } from 'project-constructs';
-import { CfnOutput, Duration, Fn, NestedStack, NestedStackProps, Stack, StackProps } from 'aws-cdk-lib';
+import { DeadLetterQueue, DynamoTable, LambdaFunction, ApiLambdaFunction, HttpApi } from 'project-constructs';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
-import { Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { DynamoEventSource, SqsDlq, SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
-import {
-  AssetApiDefinition,
-  SpecRestApi
-} from 'aws-cdk-lib/aws-apigateway';
-import {
-  Dashboard,
-  GraphWidget,
-  GRID_WIDTH,
-  HorizontalAnnotation,
-  IWidget,
-  Metric,
-  Statistic,
-  TextWidget
-} from 'aws-cdk-lib/aws-cloudwatch';
-import { RestApiBase } from 'aws-cdk-lib/aws-apigateway/lib/restapi';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { ApiLambdaFunction } from 'project-constructs/lib/ApiLambdaFunction';
 import {ILambdaDeploymentConfig, LambdaApplication} from 'aws-cdk-lib/aws-codedeploy';
+import {HttpUserPoolAuthorizer} from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import {DomainMappingOptions, DomainName, HttpMethod} from '@aws-cdk/aws-apigatewayv2-alpha';
+import {FilterPattern, MetricFilter} from 'aws-cdk-lib/aws-logs';
+import {OperationalStack} from './operational-stack';
+import {CnameRecord, HostedZone} from 'aws-cdk-lib/aws-route53';
+import {DnsValidatedCertificate} from 'aws-cdk-lib/aws-certificatemanager';
+
+export const HTTP_4XX_ERROR = 'Http4XXError';
 
 export interface APIProps extends StackProps {
+  readonly projectName: string;
   readonly authRoleArn: string;
   readonly unauthRoleArn: string;
   readonly domainName?: string;
   readonly hostedZoneId?: string;
-
   readonly testingRoleArn: string;
   readonly demoTableArn: string;
   readonly demoTableStreamArn: string;
   readonly notificationQueueArn: string;
-
+  readonly userPoolId: string;
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
-
-interface ApiGatewayMetricInfo {
-  method: string;
-  resource: string;
-}
-
 
 /** CDK Stack containing DemoFactory rest api. */
 export class APIStack extends Stack {
   /** Queue for feedback messages */
   public readonly feedbackQueue: Queue;
   public readonly application: LambdaApplication;
+  public readonly api: HttpApi;
   /** CloudFormation output containing the rest api url */
+  public readonly apiId: CfnOutput;
+  public readonly apiStage: CfnOutput;
   public readonly apiUrl: CfnOutput;
   public readonly feedbackQueueArn: CfnOutput;
 
   constructor(scope: Construct, id: string, props: APIProps) {
     super(scope, id, props);
     //const testingRole = Role.fromRoleArn(this, 'TestingRole_RestApi', props.testingRoleArn);
+    const userPool = UserPool.fromUserPoolId(this, 'UserPool', props.userPoolId);
     const demoTable = DynamoTable.fromTableAttributes(this, 'Demo', {
       tableArn: props.demoTableArn,
       tableStreamArn: props.demoTableStreamArn,
@@ -69,19 +59,51 @@ export class APIStack extends Stack {
     const notificationQueue = Queue.fromQueueArn(this, 'notificationQueue', props.notificationQueueArn);
 
     // ** Api Gateway **
-    // Create Api Specs asset
-    const asset = new Asset(this, 'ApiAsset', {
-      path: '../rest-api/specs/api-specs.yaml',
+    let domainMapping: DomainMappingOptions | undefined = undefined;
+    let apiUrl: string | undefined;
+
+    if (props.domainName && props.hostedZoneId) {
+      apiUrl = `https://${props.domainName}/`;
+      const hostedZone = HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+        hostedZoneId: props.hostedZoneId,
+        zoneName: props.domainName,
+      });
+
+      const certificate = new DnsValidatedCertificate(this, 'Certificate', {
+        domainName: props.domainName,
+        hostedZone,
+      });
+      const customDomainName = new DomainName(this, 'DomainName', {
+        domainName: props.domainName,
+        certificate,
+      });
+      domainMapping = { domainName: customDomainName };
+
+      new CnameRecord(this, 'APIAliasRecord', {
+        zone: hostedZone,
+        recordName: props.domainName,
+        domainName: customDomainName.regionalDomainName,
+        ttl: Duration.minutes(15),
+      });
+    }
+
+    const authorizer = new HttpUserPoolAuthorizer('Authorizer', userPool );
+
+    this.api = new HttpApi(this, 'HttpApi', {
+      defaultDomainMapping: domainMapping,
     });
 
-    // Transform Specs file
-    const specsContent = Fn.transform('AWS::Include', { Location: asset.s3ObjectUrl });
-
-    const api = new SpecRestApi(this, 'Api', {
-      apiDefinition: AssetApiDefinition.fromInline(specsContent),
-      deployOptions: {
-        dataTraceEnabled: true
-      }
+    new MetricFilter(this, `${HTTP_4XX_ERROR}MetricFilter`, {
+      metricNamespace: 'API',
+      metricName: HTTP_4XX_ERROR,
+      logGroup: this.api.logGroup,
+      filterPattern: FilterPattern.all(
+        FilterPattern.stringValue('$.status', '=', '4*'),
+        FilterPattern.stringValue('$.status', '!=', '401'),
+        FilterPattern.stringValue('$.status', '!=', '403'),
+        FilterPattern.stringValue('$.status', '!=', '404'),
+      ),
+      metricValue: '1',
     });
 
     // ** SQS Queues **
@@ -91,7 +113,6 @@ export class APIStack extends Stack {
     this.feedbackQueueArn = new CfnOutput(this, 'FeedbackQueueArn', {
       value: this.feedbackQueue.queueArn,
     });
-
 
     // ** LAMBDAS **
     const postFeedbackLambda = new LambdaFunction(this, 'postFeedbackLambda', {
@@ -114,9 +135,10 @@ export class APIStack extends Stack {
       },
       application: this.application,
       deploymentConfig: props.deploymentConfig,
-      api: api,
-      method: 'GET',
-      path: '/demos'
+      api: this.api,
+      method: HttpMethod.GET,
+      path: '/demos',
+      authorizer
     });
     demoTable.grantReadData(getAllDemoFunction);
 
@@ -128,9 +150,10 @@ export class APIStack extends Stack {
       },
       application: this.application,
       deploymentConfig: props.deploymentConfig,
-      api: api,
-      method: 'GET',
-      path: '/demos/{demoId}/'
+      api: this.api,
+      method: HttpMethod.GET,
+      path: '/demos/{demoId}/',
+      authorizer
     });
     demoTable.grantReadData(getDemoFunction);
 
@@ -142,9 +165,10 @@ export class APIStack extends Stack {
       },
       application: this.application,
       deploymentConfig: props.deploymentConfig,
-      api: api,
-      method: 'POST',
-      path: '/demos'
+      api: this.api,
+      method: HttpMethod.POST,
+      path: '/demos',
+      authorizer
     });
     demoTable.grantWriteData(postDemoFunction);
 
@@ -156,9 +180,10 @@ export class APIStack extends Stack {
       },
       application: this.application,
       deploymentConfig: props.deploymentConfig,
-      api: api,
-      method: 'PUT',
-      path: '/demos/{demoId}'
+      api: this.api,
+      method: HttpMethod.PUT,
+      path: '/demos/{demoId}',
+      authorizer
     });
     demoTable.grantReadWriteData(putDemoFunction);
 
@@ -170,9 +195,10 @@ export class APIStack extends Stack {
       },
       application: this.application,
       deploymentConfig: props.deploymentConfig,
-      api: api,
-      method: 'DELETE',
-      path: '/demos/{demoId}'
+      api: this.api,
+      method: HttpMethod.DELETE,
+      path: '/demos/{demoId}',
+      authorizer
     });
     demoTable.grantReadWriteData(deleteDemoFunction);
 
@@ -219,9 +245,10 @@ export class APIStack extends Stack {
       retryAttempts: 0,
     }));
 
-    // ** CW Dashboard **
-    new DashboardsStack(this, 'DashboardsStack', {
-      api: api,
+    // ** Operational Stack **
+    new OperationalStack(this, 'OperationalStack', {
+      projectName: props.projectName,
+      api: this.api,
       lambdaFunctions: [
         notificationLambda,
         demoConsumerLambda,
@@ -232,104 +259,16 @@ export class APIStack extends Stack {
         getDemoFunction
       ],
     });
+
+    this.apiId = new CfnOutput(this, 'ApiId', {
+      value: this.api.apiId,
+    });
+    this.apiStage = new CfnOutput(this, 'ApiStage', {
+      value: this.api.defaultStage?.stageName || '',
+    });
+    this.apiUrl = new CfnOutput(this, 'ApiUrl', {
+      value: apiUrl || this.api.url || '',
+    });
   }
 }
 
-export interface DashboardsStackProps extends NestedStackProps {
-  api: RestApiBase;
-  lambdaFunctions: LambdaFunction [];
-}
-
-class DashboardsStack extends NestedStack {
-  constructor(scope: Construct, id: string, props: DashboardsStackProps) {
-    super(scope, id, props);
-
-    const dashboard = new Dashboard(this, 'BackendDashboard', {
-      dashboardName: 'DemoFactory_Backend',
-    });
-
-    const lambdaErrorWidgets: IWidget[] = [];
-    props.lambdaFunctions.forEach(lambdaFunction => {
-      lambdaErrorWidgets.push(lambdaFunction.errorWidget);
-    });
-
-    dashboard.addWidgets(
-      new TextWidget({
-        markdown: '# API Gateway Metrics',
-        width: GRID_WIDTH,
-        height: 1,
-      }),
-      new GraphWidget({
-        width: 12,
-        height: 6,
-        title: 'API [Requests]',
-        left: [
-          new Metric({
-            namespace: 'AWS/ApiGateway',
-            metricName: 'Count',
-            statistic: Statistic.SUM,
-            period: Duration.seconds(300),
-            dimensionsMap: { ApiId: props.api.restApiId },
-          }),
-        ],
-      }),
-      new GraphWidget({
-        width: 12,
-        height: 6,
-        title: 'API [Errors]',
-        left: [
-          new Metric({
-            namespace: 'AWS/ApiGateway',
-            metricName: '4xx',
-            statistic: Statistic.SUM,
-            period: Duration.seconds(300),
-            dimensionsMap: { ApiId: props.api.restApiId },
-          }),
-          new Metric({
-            namespace: 'AWS/ApiGateway',
-            metricName: '5xx',
-            statistic: Statistic.SUM,
-            period: Duration.seconds(300),
-            dimensionsMap: { ApiId: props.api.restApiId },
-          }),
-        ],
-      }),
-      this.apiGatewayLatencyWidget(props.api, 'API [Latency p90]', 'Latency', 'p90',{ value: 1000, label: 'SLA' }),
-      this.apiGatewayLatencyWidget(props.api, 'API [4XX Sum]', '4xx', 'Sum', { value: 10, label: 'Threshold' }),
-      new TextWidget({
-        markdown: '# Lambda Metrics',
-        width: GRID_WIDTH,
-        height: 1,
-      }),
-      ...lambdaErrorWidgets,
-    );
-  }
-
-  apiGatewayLatencyWidget(api: SpecRestApi, title: string, metricName: string, statistic: string, annotation: HorizontalAnnotation): GraphWidget {
-    const API_GATEWAY_ROUTES = [
-      { method: 'POST', resource: '/feedbacks' } as ApiGatewayMetricInfo,
-      { method: 'GET', resource: '/demos' } as ApiGatewayMetricInfo,
-      { method: 'POST', resource: '/demos' } as ApiGatewayMetricInfo,
-      { method: 'GET', resource: '/demos/{id}' } as ApiGatewayMetricInfo,
-      { method: 'PUT', resource: '/demos/{id}' } as ApiGatewayMetricInfo,
-      { method: 'DELETE', resource: '/demos/{id}' } as ApiGatewayMetricInfo,
-    ];
-    const widget = new GraphWidget({
-      width: GRID_WIDTH,
-      height: 6,
-      title,
-      left: [],
-      leftAnnotations: [ annotation ],
-    });
-    for (const route of API_GATEWAY_ROUTES) {
-      widget.addLeftMetric(new Metric({
-        dimensionsMap: { Method: route.method, Resource: route.resource, ApiId: api.restApiId, Stage: api.deploymentStage.stageName },
-        namespace: 'AWS/ApiGateway',
-        metricName,
-        statistic,
-        period: Duration.seconds(300),
-      }));
-    }
-    return widget;
-  }
-}

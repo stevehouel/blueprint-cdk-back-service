@@ -1,8 +1,8 @@
-import { newDocumentClient } from './model.helper';
-import { Demo, DemoModel, NotFoundError } from '../models/index';
-import { Config } from './config/config';
+import { newDocumentClient } from '../helper/model.helper';
+import { Demo, DemoModel, NotFoundError } from '../../models/index';
+import { Config } from '../config/config';
 import { v4 as uuidv4 } from 'uuid';
-import * as templates from './templates';
+import * as templates from '../templates';
 
 const RESERVED_IDENTIFIER_PREFIX = 'RESERVED_';
 

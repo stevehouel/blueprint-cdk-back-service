@@ -13,7 +13,8 @@
     "synth": "CI=true lerna run --parallel --no-sort synth",
     "test:watch": "lerna run --parallel --no-sort test:watch",
     "lint": "lerna run --parallel --no-sort lint",
-    "test-functional": "lerna run test-functional"
+    "test-functional": "lerna run test-functional",
+    "create-test-user": "lerna run create-test-user"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

@@ -37,8 +37,8 @@ deploy:
 	yarn cdk deploy ${PIPELINE_STACK_NAME}
 
 create-test-user:
-	cd packages/data-models && \
-	node -e "require('./lib/test-support/auth/auth.helpers').createUserScript()"
+	cd packages/rest-api && \
+	node -e "require('./features/auth/auth.helper').createUsersScript()"
 
 generate-sample-data:
 	cd packages/rest-api && \

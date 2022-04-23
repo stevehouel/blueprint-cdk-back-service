@@ -6,7 +6,7 @@ Feature: Demo
 
   Scenario: I list demos
     Given A demo that I created
-    When I fetch the demos list
+    When I fetch a list of demos
     Then I get a 200 status
     Then I get a list of demos
 

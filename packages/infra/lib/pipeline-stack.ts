@@ -60,7 +60,8 @@ export class PipelineStack extends Stack {
       // Adding Infra Stage
       const infra = new InfraStage(this, stage.name, {
         ...stage,
-        pipelineAccount: this.account
+        pipelineAccount: this.account,
+        projectName: props.projectName
       });
       const infraStage = pipeline.addStage(infra);
       // In case we are in a testing stage
@@ -71,6 +72,7 @@ export class PipelineStack extends Stack {
             STAGE: stage.name.toLowerCase()
           },
           commands: [
+            'yarn create-test-user',
             'yarn test-functional'
           ],
           rolePolicyStatements: [ new PolicyStatement({

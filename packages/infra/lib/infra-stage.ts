@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { APIStack } from 'rest-api';
 
 export interface InfraStageProps extends StageProps {
+  readonly projectName: string;
   readonly domainName?: string;
   readonly cognitoDomainPrefix: string;
   readonly callbackUrls?: string[];
@@ -47,6 +48,7 @@ export class InfraStage extends Stage {
     });
 
     const apiStack = new APIStack(this, 'RestApi', {
+      projectName: props.projectName,
       terminationProtection: props.terminationProtection,
       authRoleArn: infraStack.authRoleArn.value,
       unauthRoleArn: infraStack.unauthRoleArn.value,
@@ -55,7 +57,8 @@ export class InfraStage extends Stage {
       testingRoleArn: testingStack.testingRoleArn.value,
       demoTableArn: modelStack.demoTableArn.value,
       demoTableStreamArn: modelStack.demoTableStreamArn.value,
-      notificationQueueArn: infraStack.notificationQueueArn.value
+      notificationQueueArn: infraStack.notificationQueueArn.value,
+      userPoolId: infraStack.userPoolId.value,
     });
 
     // Outputs

@@ -4,7 +4,7 @@ import {
   CognitoUser,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
-import { ConfigParameters, Config } from '../config/config';
+import {getTestingRoleCredentials, ConfigParameters, Config} from 'data-models';
 
 export interface JwtTokens {
   idToken: string;
@@ -27,14 +27,18 @@ export async function getCognitoUserTokens(configuration: ConfigParameters, user
     UserPoolId: configuration.cognitoUserPool,
     ClientId: configuration.cognitoClientId,
   });
+
   const cognitoUser = new CognitoUser({
     Pool: userPool,
-    Username: username,
+    Username: getUsername(username),
   });
+
   const authDetails = new AuthenticationDetails({
-    Username: username,
+    Username: getUsername(username),
     Password: password,
   });
+
+  console.log(authDetails);
 
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authDetails, {
@@ -71,7 +75,7 @@ async function createTestUsers(configuration: ConfigParameters) {
         UserPoolId: configuration.cognitoUserPool,
         Username: username,
         UserAttributes: [
-          { Name: 'email', Value: `test_${username}@amazon.com` },
+          { Name: 'email', Value: username },
           { Name: 'given_name', Value: givenName },
           { Name: 'family_name', Value: familyName }
         ],
@@ -97,13 +101,13 @@ async function createTestUsers(configuration: ConfigParameters) {
   const userCredentials = await getTestUserCredentials(configuration, TestUserType.USER);
   const adminCredentials = await getTestUserCredentials(configuration, TestUserType.ADMIN);
   await createUser({
-    username: userCredentials.username,
+    username: getUsername(userCredentials.username),
     password: userCredentials.password,
     givenName: 'Tester',
     familyName: 'User',
   });
   await createUser({
-    username: adminCredentials.username,
+    username: getUsername(adminCredentials.username),
     password: adminCredentials.password,
     givenName: 'Tester',
     familyName: 'Admin',
@@ -112,7 +116,7 @@ async function createTestUsers(configuration: ConfigParameters) {
   console.log(`Adding user ${adminCredentials.username} to Admin group`);
   await cognito.adminAddUserToGroup({
     UserPoolId: configuration.cognitoUserPool,
-    Username: adminCredentials.username,
+    Username: getUsername(adminCredentials.username),
     GroupName: 'Admin',
   }).promise();
 }
@@ -138,20 +142,18 @@ export async function getTestUserCredentials(configuration: ConfigParameters, us
   }).promise()).SecretString as string;
 
   const { username, password } = JSON.parse(userSecretString);
-  return { username, password };
-}
-
-export function getTestingRoleCredentials(testingRoleArn: string) {
-  return new AWS.ChainableTemporaryCredentials({
-    params: {
-      RoleArn: testingRoleArn,
-      RoleSessionName: 'FunctionalTests',
-    },
-  });
+  return {
+    username: username,
+    password: password
+  };
 }
 
 export function createUsersScript() {
   const { configuration } = Config.loadConfigFromEnv();
   createTestUsers(configuration)
     .catch((error) => console.error(error));
+}
+
+export function getUsername(username: string) {
+  return `test_${username}@test.fr`;
 }

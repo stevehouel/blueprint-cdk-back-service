@@ -1,8 +1,7 @@
 import { DocumentClient, ClientConfiguration } from 'aws-sdk/clients/dynamodb';
 
-import { Config } from './config/config';
-import { getTestingRoleCredentials } from './auth/auth.helper';
-
+import { Config } from '../config/config';
+import {getTestingRoleCredentials} from './auth.helper';
 
 /**
  * DynamoDB Document client to be used by data models.

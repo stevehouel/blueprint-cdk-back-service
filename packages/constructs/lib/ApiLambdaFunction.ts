@@ -1,14 +1,14 @@
 import { Construct } from 'constructs';
 import { LambdaFunction, LambdaFunctionProps } from './LambdaFunction';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IRestApi } from 'aws-cdk-lib/aws-apigateway/lib/restapi';
+import {HttpApi, HttpMethod, IHttpApi, IHttpRouteAuthorizer} from '@aws-cdk/aws-apigatewayv2-alpha';
+import {HttpLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 
 export interface ApiLambdaFunctionProps extends LambdaFunctionProps {
-  readonly api: IRestApi,
-  readonly method?: string;
-  readonly path?: string;
-  readonly stage?: string;
+  readonly api: HttpApi,
+  readonly method: HttpMethod;
+  readonly path: string;
+  readonly authorizer?: IHttpRouteAuthorizer;
 }
 
 /**
@@ -21,10 +21,11 @@ export class ApiLambdaFunction extends LambdaFunction {
       ...props,
     });
 
-    this.addPermission(`${id}Permission`, {
-      principal: new ServicePrincipal('apigateway.amazonaws.com'),
-      scope: props.api,
-      sourceArn: props.api.arnForExecuteApi(props.method, props.path, props.stage)
+    props.api.addRoutes({
+      path: props.path,
+      methods: [ props.method ],
+      integration: new HttpLambdaIntegration(`${id}Integration`, this),
+      authorizer: props.authorizer
     });
   }
 }
