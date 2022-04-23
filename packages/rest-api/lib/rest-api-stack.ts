@@ -186,7 +186,7 @@ export class APIStack extends Stack {
       deploymentConfig: props.deploymentConfig,
       api: this.api,
       method: HttpMethod.GET,
-      path: '/demos/{demoId}',
+      path: '/demos/{id}',
       authorizer
     });
     demoTable.grantReadData(getDemoFunction);
@@ -216,7 +216,7 @@ export class APIStack extends Stack {
       deploymentConfig: props.deploymentConfig,
       api: this.api,
       method: HttpMethod.PUT,
-      path: '/demos/{demoId}',
+      path: '/demos/{id}',
       authorizer
     });
     demoTable.grantReadWriteData(putDemoFunction);
@@ -231,7 +231,7 @@ export class APIStack extends Stack {
       deploymentConfig: props.deploymentConfig,
       api: this.api,
       method: HttpMethod.DELETE,
-      path: '/demos/{demoId}',
+      path: '/demos/{id}',
       authorizer
     });
     demoTable.grantReadWriteData(deleteDemoFunction);

@@ -23,7 +23,6 @@ function getClient(cucumberWorld: IWorld) {
   if (cucumberWorld.accessToken) {
     headers.Authorization = cucumberWorld.accessToken;
   }
-  console.log(headers);
   return axios.create({
     baseURL: `${configuration.apiUrl}/demos`,
     headers,
@@ -63,6 +62,7 @@ When('I fetch a demo', async function () {
 });
 
 When('I delete a demo', async function () {
+  console.log(this.demo);
   const client = getClient(this).delete(`/${this.demo?.id}`)
     .then((resp) => this.response = resp)
     .catch((err) => this.error = err);

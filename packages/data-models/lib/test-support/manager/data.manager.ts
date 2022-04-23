@@ -95,13 +95,12 @@ export class DataManager {
   manageDemo = (demo: Demo) =>
     this.manageResource<Demo>(this.demos, demo, demo.id);
 
-
   /**
    * Creates a Demo
    * @returns Managed demo resource
    */
   async createDemo(isDefault = true, overrides?: Partial<Omit<Demo, 'id'>>) {
-    this.checkIfDefaultExists('shadowing', this.defaultResources.demo, isDefault);
+    this.checkIfDefaultExists('demo', this.defaultResources.demo, isDefault);
 
     const demo = await this.demoModel.create({
       ...templates.DEMO_TEMPLATE,
