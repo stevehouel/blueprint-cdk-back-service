@@ -60,15 +60,10 @@ const post = api.handle(async (request) => {
  */
 const put = api.handle(async (request) => {
   const parsedDemo = demoModel.parse(request.body);
-  const userId = api.getUsername(request);
-  // Only owner can update the given demo
   if (request.pathParameters.id !== parsedDemo.id) {
     throw new BadRequestError("Demo ids don't match");
   }
   const currentDemo = await demoModel.get(request.pathParameters.id);
-  if(currentDemo.userId !== userId) {
-    throw new ForbiddenError('You can only update your own demo or the one you lead');
-  }
   let updatedDemo;
   console.info(`Create new version of demo ${JSON.stringify(currentDemo)} with new content ${JSON.stringify(parsedDemo)}`);
   updatedDemo = await demoModel.update(parsedDemo);
@@ -84,12 +79,7 @@ const put = api.handle(async (request) => {
  */
 const deleteDemo = api.handle(async (request) => {
   const demo = await demoModel.get(request.pathParameters.id);
-  const userId = api.getUsername(request);
-  if(demo && demo.userId !== userId) {
-    throw new ForbiddenError('You can only delete demo for yourself');
-  }
   await demoModel.delete(demo.id);
-
   return {
     statusCode: 204,
     body: null,

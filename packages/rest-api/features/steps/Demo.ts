@@ -2,7 +2,7 @@ import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import expect from 'expect';
 import { v4 as uuidv4 } from 'uuid';
 import { dataManager, configuration } from './Shared';
-import {Demo, DemoModel, NotFoundError, newDocumentClient, DEMO_TEMPLATE} from 'data-models';
+import {Demo, DemoModel, NotFoundError, newDocumentClient, DEMO_TEMPLATE, DemoStatus} from 'data-models';
 import {Given, IWorld, Then, When} from '@cucumber/cucumber';
 
 const demoModel = new DemoModel(configuration.demoTable, newDocumentClient(configuration));
@@ -69,10 +69,10 @@ When('I delete a demo', async function () {
 });
 
 When('I create a demo', async function () {
-  await getClient(this).post('', {
+  this.createdDemo = {
     ...DEMO_TEMPLATE,
-    id: `test-${uuidv4().split('-')[0]}`,
-  })
+  };
+  await getClient(this).post('', this.createdDemo)
     .then((resp) => {
       this.response = resp;
       this.demo = resp.data;
@@ -84,7 +84,7 @@ When('I create a demo', async function () {
 When('I update a demo', async function () {
   await getClient(this).put(`/${this.demo?.id}`, {
     ...this.demo,
-    name: 'New name',
+    demoStatus: DemoStatus.Deleted,
   })
     .then((resp) => {
       this.response = resp;
