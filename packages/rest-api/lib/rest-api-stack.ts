@@ -11,10 +11,11 @@ import { ILambdaDeploymentConfig, LambdaApplication } from 'aws-cdk-lib/aws-code
 import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { DomainMappingOptions, DomainName, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
-import { FilterPattern, MetricFilter } from 'aws-cdk-lib/aws-logs';
+import {FilterPattern, LogGroup, MetricFilter, RetentionDays} from 'aws-cdk-lib/aws-logs';
 import { OperationalStack } from './operational-stack';
 import { CnameRecord, HostedZone } from 'aws-cdk-lib/aws-route53';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import {CfnStage} from 'aws-cdk-lib/aws-apigatewayv2';
 
 export const HTTP_4XX_ERROR = 'Http4XXError';
 
@@ -93,10 +94,33 @@ export class APIStack extends Stack {
       defaultDomainMapping: domainMapping,
     });
 
+    const apiLogGroup = new LogGroup(this, 'ApiAccessLogGroup', {
+      retention: RetentionDays.TEN_YEARS,
+    });
+
+    const apiStage: CfnStage | undefined = this.api.defaultStage?.node.defaultChild as CfnStage;
+    if (apiStage) {
+      apiStage.defaultRouteSettings = {
+        ...apiStage.defaultRouteSettings,
+        detailedMetricsEnabled: true,
+      };
+      apiStage.accessLogSettings = {
+        destinationArn: apiLogGroup.logGroupArn,
+        format: '{ "httpMethod":"$context.httpMethod",' +
+          '"routeKey":"$context.routeKey",' +
+          '"status":"$context.status",' +
+          '"protocol":"$context.protocol", ' +
+          '"responseLength":"$context.responseLength", ' +
+          '"requestTime":"$context.requestTime", ' +
+          '"requestId":"$context.requestId", ' +
+          '"errorMessage":"$context.error.message" }',
+      };
+    }
+
     new MetricFilter(this, `${HTTP_4XX_ERROR}MetricFilter`, {
       metricNamespace: 'API',
       metricName: HTTP_4XX_ERROR,
-      logGroup: this.api.logGroup,
+      logGroup: apiLogGroup,
       filterPattern: FilterPattern.all(
         FilterPattern.stringValue('$.status', '=', '4*'),
         FilterPattern.stringValue('$.status', '!=', '401'),
@@ -105,6 +129,7 @@ export class APIStack extends Stack {
       ),
       metricValue: '1',
     });
+
 
     // ** SQS Queues **
     this.feedbackQueue = new Queue(this, 'Feedback', {
