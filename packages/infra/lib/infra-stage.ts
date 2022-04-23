@@ -59,6 +59,7 @@ export class InfraStage extends Stage {
       demoTableStreamArn: modelStack.demoTableStreamArn.value,
       notificationQueueArn: infraStack.notificationQueueArn.value,
       userPoolId: infraStack.userPoolId.value,
+      userPoolClientId: infraStack.userPoolAppClientId.value
     });
 
     // Outputs

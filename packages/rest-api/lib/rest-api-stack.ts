@@ -9,7 +9,7 @@ import { DynamoEventSource, SqsDlq, SqsEventSource } from 'aws-cdk-lib/aws-lambd
 import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { ILambdaDeploymentConfig, LambdaApplication } from 'aws-cdk-lib/aws-codedeploy';
 import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import {UserPool, UserPoolClient} from 'aws-cdk-lib/aws-cognito';
 import { DomainMappingOptions, DomainName, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
 import {FilterPattern, LogGroup, MetricFilter, RetentionDays} from 'aws-cdk-lib/aws-logs';
 import { OperationalStack } from './operational-stack';
@@ -30,6 +30,7 @@ export interface APIProps extends StackProps {
   readonly demoTableStreamArn: string;
   readonly notificationQueueArn: string;
   readonly userPoolId: string;
+  readonly userPoolClientId: string;
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
@@ -48,7 +49,6 @@ export class APIStack extends Stack {
   constructor(scope: Construct, id: string, props: APIProps) {
     super(scope, id, props);
     //const testingRole = Role.fromRoleArn(this, 'TestingRole_RestApi', props.testingRoleArn);
-    const userPool = UserPool.fromUserPoolId(this, 'UserPool', props.userPoolId);
     const demoTable = DynamoTable.fromTableAttributes(this, 'Demo', {
       tableArn: props.demoTableArn,
       tableStreamArn: props.demoTableStreamArn,
@@ -88,7 +88,11 @@ export class APIStack extends Stack {
       });
     }
 
-    const authorizer = new HttpUserPoolAuthorizer('Authorizer', userPool );
+    const userPool = UserPool.fromUserPoolId(this, 'UserPool', props.userPoolId);
+    const userPoolClientId = UserPoolClient.fromUserPoolClientId(this, 'UserPoolClient', props.userPoolClientId);
+    const authorizer = new HttpUserPoolAuthorizer('Authorizer', userPool, {
+     userPoolClients: [userPoolClientId]
+    });
 
     this.api = new HttpApi(this, 'HttpApi', {
       defaultDomainMapping: domainMapping,

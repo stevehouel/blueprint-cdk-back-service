@@ -23,6 +23,7 @@ function getClient(cucumberWorld: IWorld) {
   if (cucumberWorld.accessToken) {
     headers.Authorization = cucumberWorld.accessToken;
   }
+  console.log(headers);
   return axios.create({
     baseURL: `${configuration.apiUrl}/demos`,
     headers,
@@ -56,8 +57,13 @@ When('I fetch the demo', async function () {
   if (!this.demo) {
     throw new Error('this.demo is not initialized.');
   }
-
   await getClient(this).get(this.demo.id)
+    .then((resp) => this.response = resp)
+    .catch((err) => this.error = err);
+});
+
+When('I delete the demo', async function () {
+  const client = getClient(this).delete(`/${this.demo?.id}`)
     .then((resp) => this.response = resp)
     .catch((err) => this.error = err);
 });

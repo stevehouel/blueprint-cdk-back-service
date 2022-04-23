@@ -38,8 +38,6 @@ export async function getCognitoUserTokens(configuration: ConfigParameters, user
     Password: password,
   });
 
-  console.log(authDetails);
-
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authDetails, {
       onSuccess: (session) => {
