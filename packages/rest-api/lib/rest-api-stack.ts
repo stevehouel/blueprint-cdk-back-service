@@ -24,17 +24,20 @@ import {
 import { RestApiBase } from 'aws-cdk-lib/aws-apigateway/lib/restapi';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { ApiLambdaFunction } from 'project-constructs/lib/ApiLambdaFunction';
+import {ILambdaDeploymentConfig, LambdaApplication} from 'aws-cdk-lib/aws-codedeploy';
 
 export interface APIProps extends StackProps {
-  authRoleArn: string;
-  unauthRoleArn: string;
-  domainName?: string;
-  hostedZoneId?: string;
+  readonly authRoleArn: string;
+  readonly unauthRoleArn: string;
+  readonly domainName?: string;
+  readonly hostedZoneId?: string;
 
   readonly testingRoleArn: string;
   readonly demoTableArn: string;
   readonly demoTableStreamArn: string;
-  readonly notificationQueueArn: string,
+  readonly notificationQueueArn: string;
+
+  readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
 interface ApiGatewayMetricInfo {
@@ -47,6 +50,7 @@ interface ApiGatewayMetricInfo {
 export class APIStack extends Stack {
   /** Queue for feedback messages */
   public readonly feedbackQueue: Queue;
+  public readonly application: LambdaApplication;
   /** CloudFormation output containing the rest api url */
   public readonly apiUrl: CfnOutput;
   public readonly feedbackQueueArn: CfnOutput;
@@ -59,6 +63,8 @@ export class APIStack extends Stack {
       tableStreamArn: props.demoTableStreamArn,
       globalIndexes: [ 'UserIndex', 'UserValidationStatusIndex', 'IdIndex' ]
     } );
+
+    this.application = new LambdaApplication(this, 'CodeDeployApplication', {});
 
     const notificationQueue = Queue.fromQueueArn(this, 'notificationQueue', props.notificationQueueArn);
 
@@ -93,7 +99,9 @@ export class APIStack extends Stack {
       handler: 'post',
       environment: {
         QUEUE_URL: this.feedbackQueue.queueUrl,
-      }
+      },
+      application: this.application,
+      deploymentConfig: props.deploymentConfig
     });
     this.feedbackQueue.grantSendMessages(postFeedbackLambda);
 
@@ -104,6 +112,8 @@ export class APIStack extends Stack {
       environment: {
         DEMO_TABLE_NAME: demoTable.tableName,
       },
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       api: api,
       method: 'GET',
       path: '/demos'
@@ -116,6 +126,8 @@ export class APIStack extends Stack {
       environment: {
         DEMO_TABLE_NAME: demoTable.tableName,
       },
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       api: api,
       method: 'GET',
       path: '/demos/{demoId}/'
@@ -128,6 +140,8 @@ export class APIStack extends Stack {
       environment: {
         DEMO_TABLE_NAME: demoTable.tableName,
       },
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       api: api,
       method: 'POST',
       path: '/demos'
@@ -140,6 +154,8 @@ export class APIStack extends Stack {
       environment: {
         DEMO_TABLE_NAME: demoTable.tableName,
       },
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       api: api,
       method: 'PUT',
       path: '/demos/{demoId}'
@@ -152,6 +168,8 @@ export class APIStack extends Stack {
       environment: {
         DEMO_TABLE_NAME: demoTable.tableName,
       },
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       api: api,
       method: 'DELETE',
       path: '/demos/{demoId}'
@@ -166,6 +184,8 @@ export class APIStack extends Stack {
       entry: pathJoin(__dirname, '../src/notifications/notifier.js'),
       handler: 'notify',
       timeout: Duration.seconds(4),
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       environment: {
         DOMAIN_NAME: props.domainName || '',
         // Set to true to ignore notifications
@@ -186,6 +206,8 @@ export class APIStack extends Stack {
     const demoConsumerLambda = new LambdaFunction(this, 'DemoConsumerLambda', {
       entry: pathJoin(__dirname, '../src/consumers/demo.consumer.js'),
       handler: 'consume',
+      application: this.application,
+      deploymentConfig: props.deploymentConfig,
       environment: {
         DOMAIN_NAME: props.domainName || '',
       }
