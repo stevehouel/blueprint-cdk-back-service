@@ -43,7 +43,7 @@ export class PipelineStack extends Stack {
       primaryOutputDirectory: 'packages/infra/cdk.out',
     });
 
-    const pipeline = new CodePipeline(this, 'pipeline', {
+    const pipeline = new CodePipeline(this, 'Pipeline', {
       selfMutation: props.selfMutating,
       crossAccountKeys: true, // Encrypt artifacts, required for cross-account deployments
       synth: synthStep,

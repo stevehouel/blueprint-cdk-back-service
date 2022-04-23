@@ -98,7 +98,7 @@ export class APIStack extends Stack {
     this.feedbackQueue.grantSendMessages(postFeedbackLambda);
 
     // Demo
-    const getAllDemoFunction = new ApiLambdaFunction(this, 'getAllDemoFunction', {
+    const getAllDemoFunction = new ApiLambdaFunction(this, 'GetAllDemosFunction', {
       entry: pathJoin(__dirname, '../src/handlers/demo.handler.js'),
       handler: 'getAll',
       environment: {
@@ -110,7 +110,7 @@ export class APIStack extends Stack {
     });
     demoTable.grantReadData(getAllDemoFunction);
 
-    const getDemoFunction = new ApiLambdaFunction(this, 'getDemoFunction', {
+    const getDemoFunction = new ApiLambdaFunction(this, 'GetDemoFunction', {
       entry: pathJoin(__dirname, '../src/handlers/demo.handler.js'),
       handler: 'get',
       environment: {
@@ -122,7 +122,7 @@ export class APIStack extends Stack {
     });
     demoTable.grantReadData(getDemoFunction);
 
-    const postDemoFunction = new ApiLambdaFunction(this, 'postDemoFunction', {
+    const postDemoFunction = new ApiLambdaFunction(this, 'PostDemoFunction', {
       entry: pathJoin(__dirname, '../src/handlers/demo.handler.js'),
       handler: 'post',
       environment: {
@@ -134,7 +134,7 @@ export class APIStack extends Stack {
     });
     demoTable.grantWriteData(postDemoFunction);
 
-    const putDemoFunction = new ApiLambdaFunction(this, 'putDemoFunction', {
+    const putDemoFunction = new ApiLambdaFunction(this, 'PutDemoFunction', {
       entry: pathJoin(__dirname, '../src/handlers/demo.handler.js'),
       handler: 'put',
       environment: {
@@ -146,7 +146,7 @@ export class APIStack extends Stack {
     });
     demoTable.grantReadWriteData(putDemoFunction);
 
-    const deleteDemoFunction = new ApiLambdaFunction(this, 'deleteDemoFunction', {
+    const deleteDemoFunction = new ApiLambdaFunction(this, 'DeleteDemoFunction', {
       entry: pathJoin(__dirname, '../src/handlers/demo.handler.js'),
       handler: 'deleteDemo',
       environment: {
@@ -159,10 +159,10 @@ export class APIStack extends Stack {
     demoTable.grantReadWriteData(deleteDemoFunction);
 
     // ** DEAD LETTER QUEUES **
-    const demoConsumerDLQ = new DeadLetterQueue(this, 'demoConsumerDLQ', {});
+    const demoConsumerDLQ = new DeadLetterQueue(this, 'DemoConsumerDLQ', {});
 
     // ** Notifications **
-    const notificationLambda = new LambdaFunction(this, 'notificationLambda', {
+    const notificationLambda = new LambdaFunction(this, 'NotificationLambda', {
       entry: pathJoin(__dirname, '../src/notifications/notifier.js'),
       handler: 'notify',
       timeout: Duration.seconds(4),
@@ -183,7 +183,7 @@ export class APIStack extends Stack {
     notificationQueue.grantConsumeMessages(notificationLambda);
 
     // ** Consumers
-    const demoConsumerLambda = new LambdaFunction(this, 'demoConsumerLambda', {
+    const demoConsumerLambda = new LambdaFunction(this, 'DemoConsumerLambda', {
       entry: pathJoin(__dirname, '../src/consumers/demo.consumer.js'),
       handler: 'consume',
       environment: {
