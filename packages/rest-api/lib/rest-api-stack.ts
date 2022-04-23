@@ -122,7 +122,7 @@ export class APIStack extends Stack {
         QUEUE_URL: this.feedbackQueue.queueUrl,
       },
       application: this.application,
-      deploymentConfig: props.deploymentConfig
+      deploymentConfig: props.deploymentConfig,
     });
     this.feedbackQueue.grantSendMessages(postFeedbackLambda);
 
@@ -152,7 +152,7 @@ export class APIStack extends Stack {
       deploymentConfig: props.deploymentConfig,
       api: this.api,
       method: HttpMethod.GET,
-      path: '/demos/{demoId}/',
+      path: '/demos/{demoId}',
       authorizer
     });
     demoTable.grantReadData(getDemoFunction);
