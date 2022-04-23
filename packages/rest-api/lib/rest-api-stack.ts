@@ -145,7 +145,7 @@ export class APIStack extends Stack {
     });
 
     // ** LAMBDAS **
-    const postFeedbackLambda = new LambdaFunction(this, 'postFeedbackLambda', {
+    const postFeedbackLambda = new ApiLambdaFunction(this, 'postFeedbackLambda', {
       entry: pathJoin(__dirname, '../src/handlers/feedback.handler.js'),
       handler: 'post',
       environment: {
@@ -153,6 +153,10 @@ export class APIStack extends Stack {
       },
       application: this.application,
       deploymentConfig: props.deploymentConfig,
+      api: this.api,
+      method: HttpMethod.POST,
+      path: '/feedbacks',
+      authorizer
     });
     this.feedbackQueue.grantSendMessages(postFeedbackLambda);
 
