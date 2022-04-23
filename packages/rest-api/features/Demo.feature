@@ -12,20 +12,14 @@ Feature: Demo
 
   Scenario: I fetch one of my demo
     Given A demo that I created
-    When I fetch the demo
+    When I fetch a demo
     Then I get a 200 status
     Then I get the demo
 
   Scenario: I fetch a non-existent demo
     Given A demo doesn't exist
-    When I fetch the demo
+    When I fetch a demo
     Then I get a 404 status
-
-  Scenario: I filter demos by user and status
-    Given A demo that I created
-    When I filter the demos list by user and status
-    Then I get a 200 status
-    Then I get a list of demos
 
   Scenario: I create a demo
     Given A demo that I created
@@ -35,13 +29,13 @@ Feature: Demo
 
   Scenario: I update a demo
     Given A demo that I created
-    When I update the demo
+    When I update a demo
     Then I get a 200 status
     Then I get the updated demo
   
   Scenario: I delete a demo
     Given A demo that I created
-    When I delete the demo
+    When I delete a demo
     Then I get a 204 status
   
  

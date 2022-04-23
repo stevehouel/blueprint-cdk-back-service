@@ -45,11 +45,6 @@ const get = api.handle(async (request) => {
  * Handler to create a new demo.
  */
 const post = api.handle(async (request) => {
-  const userId = api.getUsername(request);
-  const parsedDemo = demoModel.parse(request.body);
-  if (userId !== parsedDemo.userId) {
-    throw new ForbiddenError('You can only create demo for yourself');
-  }
   const demo = await demoModel.create(demoModel.parse(request.body));
   return {
     statusCode: 201,

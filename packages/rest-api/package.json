@@ -21,7 +21,8 @@
     "lint": "eslint --ext .ts --ignore-pattern *.d.ts lib",
     "lint-fix": "eslint --fix --ext .ts --ignore-pattern *.d.ts lib",
     "test-functional": "cucumber-js --publish-quiet",
-    "create-test-user": "node -e \"require('./features/auth/auth.helper').createUsersScript()\""
+    "create-test-user": "node -e \"require('./features/auth/auth.helper').createUsersScript()\"",
+    "generate-sample-data": "node -e \"require('./scripts/data.generator').generateDevelopmentData()\""
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.55.0",

@@ -42,7 +42,7 @@ create-test-user:
 
 generate-sample-data:
 	cd packages/rest-api && \
-	node -e "require('./scripts/data.generator').generateDevelopmentData('${STACK_NAME}', '${REGION}')"
+	node -e "require('./scripts/data.generator').generateDevelopmentData()"
 
 pre-commit:
 	@echo "Running pre-commit" checks

@@ -53,7 +53,7 @@ When('I fetch a list of demos', async function () {
     .catch((err) => this.error = err);
 });
 
-When('I fetch the demo', async function () {
+When('I fetch a demo', async function () {
   if (!this.demo) {
     throw new Error('this.demo is not initialized.');
   }
@@ -62,7 +62,7 @@ When('I fetch the demo', async function () {
     .catch((err) => this.error = err);
 });
 
-When('I delete the demo', async function () {
+When('I delete a demo', async function () {
   const client = getClient(this).delete(`/${this.demo?.id}`)
     .then((resp) => this.response = resp)
     .catch((err) => this.error = err);
@@ -72,19 +72,6 @@ When('I create a demo', async function () {
   await getClient(this).post('', {
     ...DEMO_TEMPLATE,
     id: `test-${uuidv4().split('-')[0]}`,
-  })
-    .then((resp) => {
-      this.response = resp;
-      this.demo = resp.data;
-      dataManager.manageDemo(resp.data);
-    })
-    .catch((err) => this.error = err);
-});
-
-When('I create a demo with invalid properties', async function () {
-  await getClient(this).post('', {
-    ...DEMO_TEMPLATE,
-    id: '((((*****',
   })
     .then((resp) => {
       this.response = resp;
@@ -139,4 +126,23 @@ Then('I get a list of demos', function () {
 
 Then('I get the demo', function () {
   expect(this.response?.data).toEqual(this.demo);
+});
+
+Then('I get the created demo', function () {
+  if (!this.createdDemo) {
+    throw new Error('this.createdDemo is not initialized.');
+  }
+  expect(this.response?.data).toEqual(expect.objectContaining(this.createdDemo));
+  expect(this.response?.data.id).toBeTruthy();
+  expect(this.response?.data.createdDate).toBeTruthy();
+  expect(this.response?.data.updatedDate).toBeTruthy();
+});
+
+Then('I get the updated demo', function () {
+  const responseData = this.response?.data;
+  expect(responseData).toEqual({
+    ...this.updatedDemo,
+    updatedDate: responseData.updatedDate,
+    version: 2,
+  });
 });
