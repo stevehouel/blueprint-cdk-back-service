@@ -62,7 +62,7 @@ When('I fetch a demo', async function () {
 });
 
 When('I delete a demo', async function () {
-  const client = getClient(this).delete(`/${this.demo?.id}`)
+  await getClient(this).delete(`/${this.demo?.id}`)
     .then((resp) => this.response = resp)
     .catch((err) => this.error = err);
 });
@@ -124,6 +124,11 @@ Then('I get the created demo', function () {
   expect(this.response?.data.id).toBeTruthy();
   expect(this.response?.data.createdDate).toBeTruthy();
   expect(this.response?.data.updatedDate).toBeTruthy();
+});
+
+Then('I am not getting any demo', function () {
+  const demo = this.response?.data.demos as Demo[];
+  expect(demo.length).toEqual(0);
 });
 
 Then('I get the updated demo', function () {

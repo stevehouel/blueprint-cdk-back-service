@@ -127,7 +127,6 @@ export class DataManager {
     };
 
     const deletionPromises: Promise<any>[] = [];
-    console.log(this.demos);
     const demosToDelete = Object.values(this.demos);
     demosToDelete.forEach(s =>
       deletionPromises.push(this.demoModel.deleteCompletely(s.id).catch(identifierErr)),
