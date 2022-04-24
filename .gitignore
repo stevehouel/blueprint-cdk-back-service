@@ -117,3 +117,4 @@ dist
 .parcel-cache
 
 local-config.json
+/packages/rest-api/coverage/

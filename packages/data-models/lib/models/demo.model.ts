@@ -304,9 +304,10 @@ export class DemoModel extends GenericModel<DemoItem> {
 
   /**
    * Delete an existing demo.
-   * @param entityId Demo entity id.
+   * @param id Demo identifier.
+   * @param version Demo specific version.
    */
-  delete(id: string, version = 0) {
+  delete(id: string, version: number = 0) {
     return this.client.delete({
       TableName: this.table,
       Key: { entityId: DemoModel.getEntityId(id, version) },
@@ -319,6 +320,17 @@ export class DemoModel extends GenericModel<DemoItem> {
           throw err;
         }
       });
+  }
+
+  /**
+   * Delete all versions of an existing demo.
+   * @param entityId Demo identifier.
+   */
+  async deleteCompletely(id: string) {
+    const latest = await this.get(id);
+    for (var _i = 0; _i <= latest.version; _i++) {
+      await this.delete(id, _i);
+    }
   }
 
   /**

@@ -56,7 +56,6 @@ const post = api.handle(async (request) => {
 /**
  * PUT /demos/{id}
  * Handler to update an existing demo.
- * Demo can be updated by the owner and the Demo lead
  */
 const put = api.handle(async (request) => {
   const parsedDemo = demoModel.parse(request.body);
@@ -74,12 +73,11 @@ const put = api.handle(async (request) => {
 
 /**
  * DELETE /demos/{id}
- * Handler to delete an existing demo.
- * Only available for the user who created the demo
+ * Handler to delete definitely an existing demo and all their versions.
  */
 const deleteDemo = api.handle(async (request) => {
   const demo = await demoModel.get(request.pathParameters.id);
-  await demoModel.delete(demo.id);
+  await demoModel.deleteCompletely(demo.id);
   return {
     statusCode: 204,
     body: null,

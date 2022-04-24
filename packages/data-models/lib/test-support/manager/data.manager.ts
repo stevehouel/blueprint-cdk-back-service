@@ -130,7 +130,7 @@ export class DataManager {
     console.log(this.demos);
     const demosToDelete = Object.values(this.demos);
     demosToDelete.forEach(s =>
-      deletionPromises.push(this.demoModel.delete(s.id).catch(identifierErr)),
+      deletionPromises.push(this.demoModel.deleteCompletely(s.id).catch(identifierErr)),
     );
     this.demos = {};
     this.defaultResources = {};

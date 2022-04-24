@@ -94,7 +94,7 @@ describe('DemoModel', () => {
         .rejects.toThrowError(BadRequestError);
     });
 
-    it('create should retry on id colision', () => {
+    it('create should retry on id collision', () => {
       mockClient.transactWrite
         .mockReturnValueOnce({ promise: () => Promise.reject({ code: 'TransactionCanceledException', message: 'ConditionalCheckFailed' }) })
         .mockReturnValue({ promise: () => Promise.resolve() });
@@ -113,7 +113,7 @@ describe('DemoModel', () => {
         });
     });
 
-    it('create should throw on id colision without retry', () => {
+    it('create should throw on id collision without retry', () => {
       mockClient.transactWrite.mockReturnValueOnce({ promise: () => Promise.reject({ code: 'TransactionCanceledException', message: 'ConditionalCheckFailed' }) });
 
       return expect(demoModel.create(demoData, 0))
@@ -311,9 +311,25 @@ describe('DemoModel', () => {
     it('should delete an existing demo', () => {
       mockClient.delete.mockReturnValue({ promise: () => Promise.resolve() });
 
-      return demoModel.delete( 'entityId')
+      return demoModel.delete( 'sample-id')
         .then(() => {
           expect(mockClient.delete).toBeCalled();
+        });
+    });
+
+    it('should delete all versions of a demo', () => {
+      const demoDatav2 = {
+        ...demoData,
+        version: 2,
+        entityId: DemoModel.getEntityId(DEMO_ID, 2),
+      };
+      mockClient.get.mockReturnValue({ promise: () => Promise.resolve({ Item: demoDatav2 }) });
+      mockClient.delete.mockReturnValue({ promise: () => Promise.resolve() });
+
+      return demoModel.deleteCompletely( 'sample-id')
+        .then(() => {
+          expect(mockClient.get).toBeCalled();
+          expect(mockClient.delete).toBeCalledTimes(3);
         });
     });
 
@@ -322,7 +338,7 @@ describe('DemoModel', () => {
         promise: () => Promise.reject({ code: 'ConditionalCheckFailedException' }),
       });
 
-      return expect(demoModel.delete('entityId')).rejects.toThrow(NotFoundError);
+      return expect(demoModel.delete('sample-id')).rejects.toThrow(NotFoundError);
     });
   });
 

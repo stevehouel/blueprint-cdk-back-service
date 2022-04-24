@@ -4100,18 +4100,6 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"data-models@file:packages/data-models":
-  version "0.0.1"
-  dependencies:
-    "@aws-sdk/client-cognito-identity-provider" "^3.55.0"
-    "@typescript-eslint/eslint-plugin" "^4.1.0"
-    "@typescript-eslint/parser" "^4.1.0"
-    ajv "^7.0.3"
-    ajv-formats "^1.5.1"
-    aws-sdk "^2.1099.0"
-    ts-jest "^26.4.4"
-    uuid "^8.3.1"
-
 data-urls@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/data-urls/-/data-urls-2.0.0.tgz#156485a72963a970f5d5821aaf642bef2bf2db9b"

@@ -62,7 +62,6 @@ When('I fetch a demo', async function () {
 });
 
 When('I delete a demo', async function () {
-  console.log(this.demo);
   const client = getClient(this).delete(`/${this.demo?.id}`)
     .then((resp) => this.response = resp)
     .catch((err) => this.error = err);
@@ -82,22 +81,11 @@ When('I create a demo', async function () {
 });
 
 When('I update a demo', async function () {
-  await getClient(this).put(`/${this.demo?.id}`, {
+  this.updatedDemo = {
     ...this.demo,
     demoStatus: DemoStatus.Deleted,
-  })
-    .then((resp) => {
-      this.response = resp;
-      this.demo = resp.data;
-    })
-    .catch((err) => this.error = err);
-});
-
-When('I update a demo with invalid properties', async function () {
-  await getClient(this).put(`/${this.demo?.id}`, {
-    ...this.demo,
-    benefits: '',
-  })
+  };
+  await getClient(this).put(`/${this.demo?.id}`, this.updatedDemo)
     .then((resp) => {
       this.response = resp;
       this.demo = resp.data;
