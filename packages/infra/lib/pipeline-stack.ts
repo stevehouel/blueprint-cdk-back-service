@@ -72,6 +72,7 @@ export class PipelineStack extends Stack {
             STAGE: stage.name.toLowerCase()
           },
           commands: [
+            'ls -l',
             'yarn create-test-user',
             'yarn test-functional'
           ],
