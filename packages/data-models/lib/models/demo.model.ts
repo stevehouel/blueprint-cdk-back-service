@@ -307,7 +307,7 @@ export class DemoModel extends GenericModel<DemoItem> {
    * @param id Demo identifier.
    * @param version Demo specific version.
    */
-  delete(id: string, version: number = 0) {
+  delete(id: string, version = 0) {
     return this.client.delete({
       TableName: this.table,
       Key: { entityId: DemoModel.getEntityId(id, version) },
@@ -328,7 +328,7 @@ export class DemoModel extends GenericModel<DemoItem> {
    */
   async deleteCompletely(id: string) {
     const latest = await this.get(id);
-    for (var _i = 0; _i <= latest.version; _i++) {
+    for (let _i = 0; _i <= latest.version; _i++) {
       await this.delete(id, _i);
     }
   }
