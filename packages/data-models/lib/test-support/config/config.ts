@@ -1,5 +1,6 @@
-import { readFileSync } from 'fs';
+import {existsSync, readFileSync} from 'fs';
 import { resolve } from 'path';
+import {ResourceNotFoundException} from '@aws-sdk/client-cognito-identity-provider';
 
 export interface ConfigParameters {
   region: string;
@@ -26,11 +27,30 @@ export class Config {
    * @throws {Error} if the stage does not exist in the configuration.
    */
   constructor(stage: string, configFilePath: string) {
-    try {
+    if(existsSync(configFilePath)) {
+      // Load config from config file path
       const rawConfig = readFileSync(configFilePath);
       this.configuration = JSON.parse(rawConfig.toString());
-    } catch (error) {
-      throw new Error(`No configuration found for stage: ${stage}. Create a ${configFilePath} file.`);
+    } else if(process.env.REGION
+      && process.env.COGNITO_USER_POOL_ID
+      && process.env.COGNITO_APP_CLIENT_ID
+      && process.env.TEST_USER_SECRET_ARN
+      && process.env.TEST_ADMIN_SECRET_ARN
+      && process.env.API_URL
+      && process.env.DEMO_TABLE_NAME) {
+      // Load from env vars
+      this.configuration = {
+        region: process.env.REGION,
+        cognitoClientId: process.env.COGNITO_USER_POOL_ID,
+        cognitoUserPool: process.env.COGNITO_APP_CLIENT_ID,
+        testUserSecretArn: process.env.TEST_USER_SECRET_ARN,
+        testAdminSecretArn: process.env.TEST_ADMIN_SECRET_ARN,
+        testingRoleArn: process.env.TESTING_ROLE_ARN,
+        apiUrl: process.env.API_URL,
+        demoTable: process.env.DEMO_TABLE_NAME,
+      }
+    } else {
+      throw new Error(`No configuration found for stage: ${stage}. Please share configuration through a file or Env variables`);
     }
   }
 

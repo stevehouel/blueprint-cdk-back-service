@@ -62,7 +62,17 @@ export class PipelineStack extends Stack {
         infraStage.addPost(new CodeBuildStep('Functional Testing', {
           input: source,
           env: {
-            STAGE: stage.name.toLowerCase()
+            STAGE: stage.name.toLowerCase(),
+            REGION: infra.region || this.region
+          },
+          envFromCfnOutputs: {
+            COGNITO_USER_POOL_ID: infra.userPoolId,
+            COGNITO_APP_CLIENT_ID: infra.userPoolAppClientId,
+            TEST_USER_SECRET_ARN: infra.testUserSecretArn,
+            TEST_ADMIN_SECRET_ARN: infra.testAdminSecretArn,
+            TESTING_ROLE_ARN: infra.testingRoleArn,
+            API_URL: infra.apiUrl,
+            DEMO_TABLE_NAME: infra.demoTableName
           },
           installCommands: [
             'yarn install --frozen-lockfile',

@@ -24,6 +24,7 @@ export class InfraStage extends Stage {
   public readonly testUserSecretArn: CfnOutput;
   public readonly testAdminSecretArn: CfnOutput;
   public readonly testingRoleArn: CfnOutput;
+  public readonly demoTableName: CfnOutput;
 
   constructor(scope: Construct, id: string, props: InfraStageProps) {
     super(scope, id, props);
@@ -71,5 +72,6 @@ export class InfraStage extends Stage {
     this.testUserSecretArn = infraStack.testUserSecretArn;
     this.testAdminSecretArn = infraStack.testAdminSecretArn;
     this.testingRoleArn = testingStack.testingRoleArn;
+    this.demoTableName = modelStack.demoTableName;
   }
 }
