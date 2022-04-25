@@ -46,14 +46,7 @@ export class PipelineStack extends Stack {
     const pipeline = new CodePipeline(this, 'Pipeline', {
       selfMutation: props.selfMutating,
       crossAccountKeys: true, // Encrypt artifacts, required for cross-account deployments
-      synth: synthStep,
-      codeBuildDefaults: {
-
-        // Control the build environment
-        buildEnvironment: {
-          computeType: ComputeType.MEDIUM
-        },
-      }
+      synth: synthStep
     });
 
     for (const stage of props.stages) {
@@ -67,12 +60,16 @@ export class PipelineStack extends Stack {
       // In case we are in a testing stage
       if (stage.testing) {
         infraStage.addPost(new CodeBuildStep('Functional Testing', {
-          input: synthStep.addOutputDirectory('./'),
+          input: source,
           env: {
             STAGE: stage.name.toLowerCase()
           },
+          installCommands: [
+            'yarn install --frozen-lockfile',
+            'yarn bootstrap'
+          ],
           commands: [
-            'ls -l',
+            'yarn build',
             'yarn create-test-user',
             'yarn test-functional'
           ],
