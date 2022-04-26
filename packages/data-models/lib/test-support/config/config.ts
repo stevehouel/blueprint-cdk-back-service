@@ -41,8 +41,8 @@ export class Config {
       // Load from env vars
       this.configuration = {
         region: process.env.REGION,
-        cognitoClientId: process.env.COGNITO_USER_POOL_ID,
-        cognitoUserPool: process.env.COGNITO_APP_CLIENT_ID,
+        cognitoUserPool: process.env.COGNITO_USER_POOL_ID,
+        cognitoClientId: process.env.COGNITO_APP_CLIENT_ID,
         testUserSecretArn: process.env.TEST_USER_SECRET_ARN,
         testAdminSecretArn: process.env.TEST_ADMIN_SECRET_ARN,
         testingRoleArn: process.env.TESTING_ROLE_ARN,
